@@ -1,0 +1,40 @@
+body {
+    background-image: url('background.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+}
+
+#character {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 90px;
+    height: 180px;
+    background-image: url('character.png');
+    position: absolute;
+    bottom: 40px;
+    transform: translateX(-50%);
+}
+
+.item {
+    width: 80px;
+    height: 80px;
+    position: absolute;
+    top: -50px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    animation: falling 3s linear forwards;
+}
+
+
+@keyframes falling {
+    to {
+        top: 100vh;
+    }
+}
+
