@@ -7,10 +7,25 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="character">
-        <div id="hitbox"></div>
+
+    <div id="coins" class="coins">coins: 0</div>
+
+    <div id="lives-container">
+        <img src="heart.png" class="heart" id="heart1">
+        <img src="heart.png" class="heart" id="heart2">
+        <img src="heart.png" class="heart" id="heart3">
     </div>
-    
+
+    <button id="buy" onclick="buy()">2LIVE = 5 COIN</button>
+
+    <div id="character"></div>
+
+    <div id="death-screen">
+        <h3>GAME OVER</h3>
+        <p id="result">Final Score: 0</p>
+        <button onclick="location.reload()">TRY AGAIN</button>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
