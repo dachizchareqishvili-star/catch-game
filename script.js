@@ -2,9 +2,13 @@ let character = document.getElementById('character');
 let dacheril = false;
 let posX = window.innerWidth / 2;
 let game_active = true;
-let field = false
-const over_music = new Audio('lose.mp3')
-const coin = new Audio('pickup.mp3')
+let field = false;
+let lives = 3;
+let coinsDisplay = document.getElementById('coins');
+let cuins = 0;
+
+const over_music = new Audio('lose.mp3');
+const coin_sound = new Audio('pickup.mp3');
 
 let itemsData = [
     { type: 'coin', img: 'coin.png' },
@@ -18,17 +22,32 @@ function isColliding(a, b) {
     return !(aRect.top > bRect.bottom || aRect.bottom < bRect.top || aRect.right < bRect.left || aRect.left > bRect.right);
 }
 
+function updateHeartsUI() {
+    for (let i = 1; i <= 3; i++) {
+        let h = document.getElementById('heart' + i);
+        if (h) {
+            h.style.display = i <= lives ? 'block' : 'none';
+        }
+    }
+}
+
+function buy() {
+    if (cuins >= 5 && lives < 3) {
+        cuins -= 5;
+        lives = Math.min(lives + 2, 3);
+        coinsDisplay.textContent = `coins: ${cuins}`;
+        updateHeartsUI();
+        coin_sound.play();
+    } else if (lives < 3) {
+        over_music.play();
+    }
+}
+
 function spawnItem() {
-    if (!game_active)  return
+    if (!game_active) return;
 
     let lucky = Math.floor(Math.random() * 100);
-    let randomData;
-
-    if (lucky >= 90) {
-        randomData = itemsData[Math.floor(Math.random() * itemsData.length)];
-    } else {
-        randomData = itemsData[Math.floor(Math.random() * (itemsData.length - 1))];
-    }
+    let randomData = lucky >= 90 ? itemsData[Math.floor(Math.random() * itemsData.length)] : itemsData[Math.floor(Math.random() * (itemsData.length - 1))];
 
     const item = document.createElement('div');
     item.className = 'item';
@@ -39,41 +58,41 @@ function spawnItem() {
     let checkInterval = setInterval(() => {
         if (!game_active) {
             clearInterval(checkInterval);
+            item.remove();
             return;
-        } 
-        
+        }
+
         if (isColliding(character, item)) {
             item.remove();
             clearInterval(checkInterval);
 
-            if (randomData.type === 'bomb' && field === false) {
-                game_active = false;
-                over_music.play(); 
+            if (randomData.type === 'coin') {
+                cuins += 1;
+                coinsDisplay.textContent = `coins: ${cuins}`;
+                coin_sound.play();
+            } else if (randomData.type === 'bomb' && field === false) {
+                lives--;
+                updateHeartsUI();
+                over_music.play();
                 
-                // მცირე დაგვიანება, რომ ხმა გაისმას alert-ამდე
-                setTimeout(() => {
-                    alert("Game Over!");
-                    location.reload();
-                }, 100);
-                
+                if (lives <= 0) {
+                    game_active = false;
+                    document.getElementById('result').innerText = "Final Score: " + cuins;
+                    document.getElementById('death-screen').style.display = 'flex';
+                }
             } else if (randomData.type === 'booster') {
                 field = true;
                 character.style.backgroundImage = "url('buble.png')";
-                
                 setTimeout(() => {
                     field = false;
                     character.style.backgroundImage = "url('character.png')";
                 }, 30000);
-            } else if (randomData.type === 'coin') {
-                coin.play(); 
             }
         }
     }, 20);
-        
-  
 
     setTimeout(() => {
-        item.remove();
+        if (item.parentNode) item.remove();
         clearInterval(checkInterval);
     }, 3000);
 }
@@ -85,8 +104,11 @@ window.addEventListener('mouseup', () => { dacheril = false; });
 
 setInterval(() => {
     if (!game_active) return;
+    let charWidth = character.offsetWidth; 
+    let maxPosX = window.innerWidth - charWidth;
+
     if (dacheril) {
-        posX += 5;
+        if (posX < maxPosX) posX += 5;
     } else {
         if (posX > 0) posX -= 4;
     }
