@@ -124,3 +124,8 @@ body {
     margin-bottom: 20px;
     color: gold;
 }
+
+img {
+    pointer-events: none;
+    -webkit-user-drag: none;
+}
